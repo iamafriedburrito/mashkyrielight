@@ -1,0 +1,54 @@
+```-- Create a trigger to enforce 10-digit mobile numbers
+CREATE TRIGGER prevent_wrong_mobile_number
+BEFORE INSERT ON your_table_name
+FOR EACH ROW
+BEGIN
+    IF LENGTH(NEW.mobile) <> 10 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Mobile number must be exactly 10 digits';
+    END IF;
+END;```
+
+```-- Calculate total marks and assign grades based on the total
+SELECT CONCAT(Fname, ' ', Lname) AS StudentName,
+       Maths + Science + History AS TotalMarks,
+       CASE
+           WHEN Maths + Science + History > 200 THEN 'A'
+           WHEN Maths + Science + History >= 176 AND Maths + Science + History <= 200 THEN 'B'
+           WHEN Maths + Science + History >= 145 AND Maths + Science + History <= 175 THEN 'C'
+           WHEN Maths + Science + History > 140 THEN 'D'
+           ELSE 'Fail'
+       END AS Grade
+FROM students;```
+
+```-- Display result of Maths and concatenate name
+SELECT CONCAT(Fname, ' ', Lname) AS StudentName,
+       IF(Maths >= 50, 'Pass in Maths', 'Fail in Maths') AS MathsResult
+FROM students;```
+
+```-- Create function to calculate tax based on salary
+DELIMITER //
+
+CREATE FUNCTION CalculateTax(salary DECIMAL(10, 2)) RETURNS DECIMAL(10, 2)
+BEGIN
+    DECLARE tax DECIMAL(10, 2);
+
+    IF salary <= 10000 THEN
+        SET tax = salary * 0.1;
+    ELSEIF salary > 10000 AND salary <= 50000 THEN
+        SET tax = 10000 * 0.1 + (salary - 10000) * 0.2;
+    ELSE
+        SET tax = 10000 * 0.1 + 40000 * 0.2 + (salary - 50000) * 0.3;
+    END IF;
+
+    RETURN tax;
+END //
+
+DELIMITER ;```
+
+-- Example usage of the tax calculation function
+SELECT CONCAT(Fname, ' ', Lname) AS StudentName,
+       Salary,
+       CalculateTax(Salary) AS TaxAmount
+FROM students;
+
+
